@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard PG</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
+        .section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .error { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Panel de Administración</h1>
+
+    <div class="section">
+        <h2>Finanzas (Vía Configuración)</h2>
+        <table>
+            <thead><tr><th>Descripción</th><th>Monto</th></tr></thead>
+            <tbody id="lista-finanzas"></tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Clientes (Vía Connection String)</h2>
+        <ul id="lista-clientes"></ul>
+    </div>
+
+    <script>
+        async function cargarDatos() {
+            try {
+                const resF = await fetch('/finanzas');
+                const finanzas = await resF.json();
+                document.getElementById('lista-finanzas').innerHTML = finanzas.map(f => 
+                    `<tr><td>${f.descripcion}</td><td>$${f.monto}</td></tr>`).join('');
+
+                const resC = await fetch('/clientes');
+                const clientes = await resC.json();
+                document.getElementById('lista-clientes').innerHTML = clientes.map(c => 
+                    `<li>${c.nombre} (${c.email})</li>`).join('');
+            } catch (e) {
+                alert("Error cargando datos: " + e.message);
+            }
+        }
+        cargarDatos();
+    </script>
+</body>
+</html>
